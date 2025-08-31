@@ -7,20 +7,8 @@
 
         <key>NSAppTransportSecurity</key>
         <dict>
-            <key>NSExceptionDomains</key>
-            <dict>
-                <key>exchange-api.bulk.trade</key>
-                <dict>
-                    <key>NSIncludesSubdomains</key>
-                    <true/>
-                    <key>NSExceptionAllowsInsecureHTTPLoads</key>
-                    <true/>
-                    <key>NSExceptionRequiresForwardSecrecy</key>
-                    <false/>
-                    <key>NSTemporaryExceptionAllowsInsecureHTTPSLoads</key>
-                    <true/>
-                </dict>
-            </dict>
+            <key>NSAllowsArbitraryLoads</key>
+            <true/>
         </dict>
 
     </dict>
