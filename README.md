@@ -1,4 +1,4 @@
-# Simple Trading App — iOS (Kotlin Multiplatform)
+# Simple Trading App — iOS (Kotlin Multiplatform) [WIP]
 
 This project is a simple trading application targeting **iOS**, written in **Kotlin Multiplatform (KMP)**. The shared business logic (networking, models, use‑cases) lives in Kotlin; the iOS UI is in Swift/SwiftUI and links the generated Kotlin/Native **XCFramework**.
 
