@@ -2,6 +2,8 @@
 
 This project is a simple trading application targeting **iOS**, written in **Kotlin Multiplatform (KMP)**. The shared business logic (networking, models, use‑cases) lives in Kotlin; the iOS UI is in Swift/SwiftUI and links the generated Kotlin/Native **XCFramework**.
 
+<img src="https://github.com/user-attachments/assets/52f6f406-fa7a-452f-b7e2-227da3d38474" alt="iPhone 16 sim" width="300" />
+
 ## 1) Prerequisites
 
 * **macOS**: 14+ recommended.
