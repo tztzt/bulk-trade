@@ -1,24 +1,14 @@
 package com.example.bulkapp.feature.trade.ui
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.flow.*
 
-import com.example.bulkapp.core.WebSocketDemo
-import com.example.bulkapp.core.L2BookMessage
-
+import com.example.bulkapp.core.*
 
 @Composable
 fun TradeRoute(
@@ -34,16 +24,15 @@ fun TradeScreen(
     onBack: () -> Unit
 ) {
     val ws = remember { WebSocketDemo() }
-    val json = remember { Json { prettyPrint = true } }
-    val messages = remember { mutableStateListOf<L2BookMessage>() }
+    var orderBook by remember { mutableStateOf(OrderBook()) }
     var error by remember { mutableStateOf<String?>(null) }
 
-    LaunchedEffect(ws) {
+    LaunchedEffect(symbol) {
         runCatching {
-            ws.connectAndSubscribe().collect { messages.add(it) }
-        }.onFailure { e ->
-            error = e.stackTraceToString()
-        }
+            ws.connectMockData(symbol)
+                .map(::snapshotToOrderBook)       // rebuild from each snapshot
+                .collect { orderBook = it }       // now you’ll have ~20 bid + 20 ask rows
+        }.onFailure { e -> error = e.stackTraceToString() }
     }
 
     Scaffold(
@@ -64,32 +53,13 @@ fun TradeScreen(
         Box(
             Modifier
                 .fillMaxSize()
-                .padding(inner)
-                .padding(16.dp),
+                .padding(inner),
             contentAlignment = Alignment.Center
         ) {
             if (error != null) {
                 ErrorCard(error!!)
             } else {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top,
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(MaterialTheme.colorScheme.surfaceVariant)
-                            .padding(8.dp)
-                    ) {
-                        items(messages) { msg ->
-                            val pretty = remember(msg) { json.encodeToString(msg) }
-                            MessageRow(pretty)
-                        }
-                    }
-                }
+                MarketTabs(modifier = Modifier.fillMaxSize(), startIndex = 1,orderBook)
             }
         }
     }

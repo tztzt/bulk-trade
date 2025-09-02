@@ -39,3 +39,10 @@ fun Double.toSigned(decimals: Int): String =
 /** Signed percent with % suffix. */
 fun Double.toSignedPercent(decimals: Int): String =
     this.toSigned(decimals) + "%"
+
+
+/** Signed percent with % suffix. */
+fun Double.toPercent(decimals: Int = 2, showSign: Boolean = false): String {
+    val scaled = if (abs(this) <= 1.0 + 1e-9) this * 100.0 else this
+    return if (showSign) scaled.toSigned(decimals) + "%" else scaled.toFixed(decimals) + "%"
+}

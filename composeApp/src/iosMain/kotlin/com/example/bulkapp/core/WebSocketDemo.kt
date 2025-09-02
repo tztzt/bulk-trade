@@ -7,6 +7,11 @@ import io.ktor.client.plugins.websocket.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import io.ktor.client.engine.darwin.Darwin
+import io.ktor.websocket.Frame
+import io.ktor.websocket.readText
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.putJsonObject
 
 class WebSocketDemo {
 
@@ -14,11 +19,11 @@ class WebSocketDemo {
         install(WebSockets)
     }
 
+    fun connectMockData(coin: String): Flow<L2BookMessage> = flow {
+        emitAll(mockData(coin))
+    }
 
-    fun connectAndSubscribe(): Flow<L2BookMessage> = flow {
-        mockData().collect { message ->
-            emit(message)
-        }
+//    fun connectAndSubscribe(coin: String): Flow<L2BookMessage> = flow {
 //        client.webSocket("wss://exchange-api.bulk.trade/ws") {
 //
 //            val subscribeMsg = buildJsonObject {
@@ -37,9 +42,10 @@ class WebSocketDemo {
 //                        val text = frame.readText()
 //                        emit(text)
 //                    }
+//
 //                    else -> {}
 //                }
 //            }
 //        }
-    }
+//    }
 }
