@@ -1,26 +1,23 @@
 package com.example.bulkapp.feature.trade.ui
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.background
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.navigation.compose.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 import com.example.bulkapp.core.WebSocketDemo
 import com.example.bulkapp.core.L2BookMessage
-
 
 
 @Composable
@@ -30,6 +27,7 @@ fun TradeRoute(
 ) {
     TradeScreen(symbol, onBack)
 }
+
 @Composable
 fun TradeScreen(
     symbol: String,
@@ -48,55 +46,47 @@ fun TradeScreen(
         }
     }
 
-    val dark = isSystemInDarkTheme()
-    MaterialTheme(
-        colorScheme = if (dark) darkColorScheme() else lightColorScheme()
-    ) {
-        // Surface provides background + content color (onBackground), fixing the black-on-black issue
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground
+    Scaffold(
+        topBar = {
+            MarketTopBar(
+                symbol = symbol,
+                isPerp = true,
+                price = 0.0,        // TODO
+                changePct = 0.0,    // TODO
+                onBack = onBack,
+                onFavorite = { /* TODO */ },
+                onShare = { /* TODO */ },
+                onAlerts = { /* TODO */ }
+            )
+        },
+        containerColor = Color.Transparent
+    ) { inner ->
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(inner)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (error != null) {
-                    ErrorCard(error!!)
-                } else {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Top,
-                        modifier = Modifier.fillMaxSize()
+            if (error != null) {
+                ErrorCard(error!!)
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top,
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .padding(8.dp)
                     ) {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack, // RTL-aware
-                                contentDescription = "Back"
-                            )
-                        }
-                        Text(
-                            symbol,
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Spacer(Modifier.height(16.dp))
-
-                        // Give the list a contrasting surface and rounded shape
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .weight(1f)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(MaterialTheme.colorScheme.surfaceVariant)
-                                .padding(8.dp)
-                        ) {
-                            items(messages) { msg ->
-                                val pretty = remember(msg) { json.encodeToString(msg) }
-                                MessageRow(pretty)
-                            }
+                        items(messages) { msg ->
+                            val pretty = remember(msg) { json.encodeToString(msg) }
+                            MessageRow(pretty)
                         }
                     }
                 }

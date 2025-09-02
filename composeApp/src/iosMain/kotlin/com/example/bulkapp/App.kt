@@ -1,5 +1,6 @@
 package com.example.bulkapp
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import kotlinx.serialization.Serializable
 
 import androidx.compose.material3.*
@@ -18,7 +19,11 @@ data class TradeArgs(val symbol: String)
 fun App() {
 
     val navController = rememberNavController()
-    MaterialTheme {
+    val dark = isSystemInDarkTheme()
+
+    MaterialTheme (
+        colorScheme = if (dark) darkColorScheme() else lightColorScheme()
+    ){
         Surface(modifier = Modifier.fillMaxSize()) {
             NavHost(navController = navController, startDestination = "list") {
                 composable("list") {
